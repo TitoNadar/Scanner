@@ -2,11 +2,13 @@ package tito.example.com.scanner;
 
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.SystemClock;
 import android.provider.ContactsContract;
 import android.provider.Settings;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Base64;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
@@ -23,6 +25,8 @@ import net.glxn.qrgen.core.scheme.VCard;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.ByteArrayOutputStream;
+
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
 
     //View Objects
@@ -31,6 +35,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 FirebaseDatabase database; //qr code scanner object
    DatabaseReference databaseReference;
     private IntentIntegrator qrScan;
+    String uri;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -95,12 +100,28 @@ FirebaseDatabase database; //qr code scanner object
                 .setCompany("Rajasthan Hackathon");
 
         Bitmap myBitmap= QRCode.from(abhay).bitmap();
-
-    }
-
+      uri=BitMapToString(myBitmap);
+    databaseReference.child(email).setValue(uri);}
     @Override
     public void onClick(View view) {
         //initiating the qr code scan
         qrScan.initiateScan();
+    }
+    public String BitMapToString(Bitmap bitmap){
+        ByteArrayOutputStream baos=new  ByteArrayOutputStream();
+        bitmap.compress(Bitmap.CompressFormat.PNG,100, baos);
+        byte [] b=baos.toByteArray();
+        String temp= Base64.encodeToString(b, Base64.DEFAULT);
+        return temp;
+    }
+    public Bitmap StringToBitMap(String encodedString){
+        try {
+            byte [] encodeByte=Base64.decode(encodedString,Base64.DEFAULT);
+            Bitmap bitmap= BitmapFactory.decodeByteArray(encodeByte, 0, encodeByte.length);
+            return bitmap;
+        } catch(Exception e) {
+            e.getMessage();
+            return null;
+        }
     }
 }
