@@ -27,4 +27,5 @@ dependencies {
     androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.1'
     //add this dependency
     compile 'com.journeyapps:zxing-android-embedded:3.4.0'
+    compile 'com.github.kenglxn.QRGen:android:2.2.0'
 }

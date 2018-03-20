@@ -54,9 +54,12 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     //converting the data to json
                     JSONObject obj = new JSONObject(result.getContents());
                     //setting values to textviews
-                    textViewName.setText(obj.getString("Email"));
+                    if((obj.getString("Email").length()>0&&obj.getString("Address").length()>0&&obj.getString("Title").length()>0));
+                   
+                    { textViewName.setText(obj.getString("Email"));
                     textViewAddress.setText(obj.getString("Address"));
-                } catch (JSONException e) {
+                generateSecondQrCode();} 
+                }catch (JSONException e) {
                     e.printStackTrace();
                     //if control comes here
                     //that means the encoded format not matches
@@ -69,6 +72,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             super.onActivityResult(requestCode, resultCode, data);
         }
     }
+
+    private void generateSecondQrCode() {
+    }
+
     @Override
     public void onClick(View view) {
         //initiating the qr code scan
