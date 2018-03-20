@@ -1,6 +1,10 @@
 package tito.example.com.scanner;
 
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.os.SystemClock;
+import android.provider.ContactsContract;
+import android.provider.Settings;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
@@ -8,8 +12,13 @@ import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 import com.google.zxing.integration.android.IntentIntegrator;
 import com.google.zxing.integration.android.IntentResult;
+
+import net.glxn.qrgen.android.QRCode;
+import net.glxn.qrgen.core.scheme.VCard;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -19,14 +28,18 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     //View Objects
     private Button buttonScan;
     private TextView textViewName, textViewAddress;
-
-    //qr code scanner object
+FirebaseDatabase database; //qr code scanner object
+   DatabaseReference databaseReference;
     private IntentIntegrator qrScan;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+
+        database=FirebaseDatabase.getInstance();
+        databaseReference=database.getReference("QR");
 
         //View objects
         buttonScan = (Button) findViewById(R.id.buttonScan);
@@ -54,11 +67,12 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     //converting the data to json
                     JSONObject obj = new JSONObject(result.getContents());
                     //setting values to textviews
-                    if((obj.getString("Email").length()>0&&obj.getString("Address").length()>0&&obj.getString("Title").length()>0));
+                    if(obj.getString("Email").length()>0&&obj.getString("Address").length()>0&&obj.getString("Title").length()>0);
                    
                     { textViewName.setText(obj.getString("Email"));
                     textViewAddress.setText(obj.getString("Address"));
-                generateSecondQrCode();} 
+                generateSecondQrCode(obj.getString("Email"),obj.getString("Address"),obj.getString("Title"));
+                    }
                 }catch (JSONException e) {
                     e.printStackTrace();
                     //if control comes here
@@ -73,7 +87,15 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         }
     }
 
-    private void generateSecondQrCode() {
+    private void generateSecondQrCode(String email,String address,String title) {
+        VCard abhay=new VCard(SystemClock.currentThreadTimeMillis()+"")
+                .setEmail(email)
+                .setAddress(address)
+                .setTitle(title)
+                .setCompany("Rajasthan Hackathon");
+
+        Bitmap myBitmap= QRCode.from(abhay).bitmap();
+
     }
 
     @Override
